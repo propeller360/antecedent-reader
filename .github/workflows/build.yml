@@ -1,0 +1,36 @@
+name: Compile Windows Executable
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout Repository Code
+      uses: actions/checkout@v4
+
+    - name: Set Up Python Environment
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install Project Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install spacy pyqt6 sentence-transformers pyinstaller
+        python -m spacy download en_core_web_sm
+
+    - name: Compile Standalone Executable via PyInstaller
+      run: |
+        pyinstaller --noconsole --onefile --name="PatentProofreader" --collect-data spacy --collect-data sentence_transformers gui.py
+
+    - name: Upload Finished Executable to GitHub
+      uses: actions/upload-artifact@v4
+      with:
+        name: PatentProofreader-Windows-Exe
+        path: dist/PatentProofreader.exe
+        retention-days: 7
