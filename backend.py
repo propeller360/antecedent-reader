@@ -1,24 +1,54 @@
 import re
 import os
+import json
 
-# Secure the absolute offline deep-learning parameters
+# Setup the configuration path in the execution folder
+CONFIG_FILE = "app_config.json"
+
+def get_run_count_and_lock():
+    """
+    Reads the configuration file to determine the launch state.
+    Returns True if it is the absolute first launch, False otherwise.
+    """
+    if not os.path.exists(CONFIG_FILE):
+        # File doesn't exist, meaning this is the absolute first launch
+        try:
+            with open(CONFIG_FILE, 'w') as f:
+                json.dump({"first_run_completed": True}, f)
+        except Exception:
+            pass # Fallback safety cage for restricted permission folders
+        return True
+    
+    return False
+
+# Execute the run counter check before loading heavy dependencies
+is_first_run = get_run_count_and_lock()
+
+# Secure the absolute offline deep-learning parameters based on the run count
 os.environ["HF_HUB_DISABLE_SYMLINKS"] = "1"
-os.environ["HF_HUB_OFFLINE"] = "1"
+
+if is_first_run:
+    print("--- FIRST RUN DETECTED: Network gate open for model caching ---")
+    os.environ["HF_HUB_OFFLINE"] = "0"
+else:
+    print("--- PROD RUN: Pure offline environment locked ---")
+    os.environ["HF_HUB_OFFLINE"] = "1"
+
 
 try:
     import spacy
-    # FLAW FIXED: Import the data package directly as an explicit Python module
     import en_core_web_sm
     from sentence_transformers import SentenceTransformer, util
 except ImportError:
     raise ImportError("Please ensure 'spacy', 'en_core_web_sm', and 'sentence-transformers' are installed.")
 
 print("Loading local NLP grammatical chunker module...")
-# Load using the explicit data package link directly instead of a generic text string name
 nlp = en_core_web_sm.load()
 
 print("Loading local semantic transformer vector engine...")
 model = SentenceTransformer('all-MiniLM-L6-v2')
+
+# ... (The rest of your backend functions like split_into_individual_claims remain exactly the same)
 
 
 def extract_reference_numerals_from_desc(description_text):
