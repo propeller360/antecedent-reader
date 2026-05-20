@@ -1,18 +1,23 @@
 import re
 import os
 
+# Secure the absolute offline deep-learning parameters
 os.environ["HF_HUB_DISABLE_SYMLINKS"] = "1"
+os.environ["HF_HUB_OFFLINE"] = "1"
 
 try:
     import spacy
+    # FLAW FIXED: Import the data package directly as an explicit Python module
+    import en_core_web_sm
     from sentence_transformers import SentenceTransformer, util
 except ImportError:
-    raise ImportError("Please ensure both 'spacy' and 'sentence-transformers' are installed.")
+    raise ImportError("Please ensure 'spacy', 'en_core_web_sm', and 'sentence-transformers' are installed.")
 
-print("Loading local NLP engine...")
-nlp = spacy.load("en_core_web_sm")
+print("Loading local NLP grammatical chunker module...")
+# Load using the explicit data package link directly instead of a generic text string name
+nlp = en_core_web_sm.load()
 
-print("Loading local semantic transformer engine...")
+print("Loading local semantic transformer vector engine...")
 model = SentenceTransformer('all-MiniLM-L6-v2')
 
 
