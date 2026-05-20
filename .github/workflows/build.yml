@@ -5,7 +5,6 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
-# Force the virtual machine runner to opt-in to the Node.js 24 architecture globally
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
@@ -30,7 +29,7 @@ jobs:
 
     - name: Compile Standalone Executable via PyInstaller
       run: |
-        pyinstaller --noconsole --onefile --name="PatentProofreader" --collect-data spacy --collect-data sentence_transformers gui.py
+        pyinstaller --noconsole --onefile --name="PatentProofreader" --collect-data spacy --collect-data en_core_web_sm --collect-data sentence_transformers gui.py
 
     - name: Upload Finished Executable to GitHub
       uses: actions/upload-artifact@v4
