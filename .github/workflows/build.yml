@@ -5,16 +5,20 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+# Force the virtual machine runner to opt-in to the Node.js 24 architecture globally
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 jobs:
   build:
     runs-on: windows-latest
 
     steps:
     - name: Checkout Repository Code
-      uses: actions/checkout@v5
+      uses: actions/checkout@v4
 
     - name: Set Up Python Environment
-      uses: actions/setup-python@v6
+      uses: actions/setup-python@v5
       with:
         python-version: '3.11'
 
@@ -29,7 +33,7 @@ jobs:
         pyinstaller --noconsole --onefile --name="PatentProofreader" --collect-data spacy --collect-data sentence_transformers gui.py
 
     - name: Upload Finished Executable to GitHub
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v4
       with:
         name: PatentProofreader-Windows-Exe
         path: dist/PatentProofreader.exe
