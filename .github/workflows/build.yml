@@ -11,10 +11,10 @@ jobs:
 
     steps:
     - name: Checkout Repository Code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - name: Set Up Python Environment
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: '3.11'
 
@@ -29,7 +29,7 @@ jobs:
         pyinstaller --noconsole --onefile --name="PatentProofreader" --collect-data spacy --collect-data sentence_transformers gui.py
 
     - name: Upload Finished Executable to GitHub
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: PatentProofreader-Windows-Exe
         path: dist/PatentProofreader.exe
