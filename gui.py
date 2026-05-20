@@ -1,4 +1,5 @@
 import sys
+import re  # <-- IMPORT FIXED: This fixes the NameError crash!
 from PyQt6.QtWidgets import (QApplication, QMainWindow, QWidget, QHBoxLayout, 
                              QVBoxLayout, QTextEdit, QPushButton, QLabel, QSplitter)
 from PyQt6.QtCore import Qt
@@ -135,7 +136,7 @@ class PatentToolGUI(QMainWindow):
         normalized_lines = raw_claims.replace('\r\n', '\n').replace('\r', '\n').split('\n')
         claims_text = " \n ".join([line.strip() for line in normalized_lines if line.strip()])
 
-        # 2. IRONCLAD SPACE RECOVERY SYSTEM
+        # 2. SPACE RECOVERY SYSTEM
         # Automatically insert missing spaces around structural patent transition words
         patent_glue_words = ['plurality', 'nodes', 'node', 'gateway', 'signal', 'transmission', 'ones', 'aligned', 'signals', 'correlated', 'composite']
         
@@ -145,7 +146,6 @@ class PatentToolGUI(QMainWindow):
             claims_text = re.sub(rf'\b(a|an|the|said)({word})\b', r'\1 \2', claims_text, flags=re.IGNORECASE)
 
         # Run our dual-output processing engine
-        from backend import analyze_patent_draft
         antecedent_html, numerals_html = analyze_patent_draft(claims_text, description_text)
         
         # Route outputs to their respective independent GUI windows
